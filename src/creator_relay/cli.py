@@ -36,4 +36,8 @@ def main() -> None:
         channels=channels(args.channels.split(",")),
     )
     message = MindRelay(args.mind_email, args.mind_id).compose(brief)
-    send_smtp(message, SmtpConfig.from_environment())
+    try:
+        config = SmtpConfig.from_environment()
+    except ValueError as exc:
+        parser.error(str(exc))
+    send_smtp(message, config)
