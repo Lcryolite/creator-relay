@@ -28,6 +28,9 @@ task explicit without sending anything by itself.
 
 See [the live Mind demo checklist](docs/live-mind-demo.md) for the official
 email/Telegram integration facts and a truthful recording sequence.
+The [DoraHacks submission draft](docs/dorahacks-submission-draft.md) contains
+the English description, criteria mapping and video storyboard with live-only
+evidence marked explicitly.
 
 ## Live email delivery (owner-only)
 
