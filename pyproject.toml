@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "creator-relay"
+version = "0.1.0"
+description = "A truthful local prototype for a Minds-powered creator relay."
+requires-python = ">=3.11"
+dependencies = ["flask>=3.0,<4"]
+
+[project.scripts]
+creator-relay = "creator_relay.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
