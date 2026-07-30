@@ -54,6 +54,26 @@ CREATOR_RELAY_SMTP_FROM='owner@example.com' \
 
 This command is not run by this repository's tests or demo.
 
+## KeeperHub testnet execution receipts
+
+Creator Relay can also let an agent create an auditable **testnet** community
+reward receipt through KeeperHub's documented Direct Execution API. It only
+accepts Ethereum Sepolia (`11155111`) and Base Sepolia (`84532`), always starts
+with a dry-run simulation, and requires an explicit owner-supplied `kh_`
+organization API key. The repository never sends a transfer by default.
+
+```bash
+KEEPERHUB_API_KEY='kh_owner_local_only' \
+.venv/bin/creator-relay simulate-community-reward \
+  --chain-id 11155111 \
+  --recipient '0x0000000000000000000000000000000000000001' \
+  --amount '0.01'
+```
+
+This is preparation for the KeeperHub hackathon, not evidence of a real
+transaction. A broadcast path remains disabled in the CLI until a separate
+owner-confirmed execution is intentionally added and recorded.
+
 ## Run locally
 
 ```bash

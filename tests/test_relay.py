@@ -1,6 +1,7 @@
 from creator_relay.relay import CreatorBrief, MindRelay
 from creator_relay.memory import CreatorMemory
 from creator_relay.delivery import SmtpConfig
+from creator_relay.keeperhub import KeeperHubClient, KeeperHubConfigurationError
 from creator_relay.web import create_app
 
 
@@ -85,3 +86,45 @@ def test_smtp_config_fails_before_any_network_without_owner_values(monkeypatch):
         assert "missing SMTP configuration" in str(exc)
     else:
         raise AssertionError("SMTP must require explicit configuration")
+
+
+def test_keeperhub_requires_explicit_org_key_before_network(monkeypatch):
+    monkeypatch.delenv("KEEPERHUB_API_KEY", raising=False)
+    try:
+        KeeperHubClient.from_environment()
+    except KeeperHubConfigurationError as exc:
+        assert "required before any" in str(exc)
+    else:
+        raise AssertionError("KeeperHub must require an explicit key")
+
+
+def test_keeperhub_simulation_uses_documented_testnet_payload():
+    observed = {}
+
+    def fake_request(**kwargs):
+        observed.update(kwargs)
+        return {"success": True, "wouldRevert": False, "status": "simulated"}
+
+    receipt = KeeperHubClient("kh_test", request_fn=fake_request).simulate_transfer(
+        chain_id=11155111,
+        recipient="0x0000000000000000000000000000000000000001",
+        amount="0.01",
+    )
+    assert receipt.simulated is True
+    assert observed["payload"]["simulate"] is True
+    assert observed["path"] == "/execute/transfer"
+
+
+def test_keeperhub_broadcast_is_never_allowed_without_confirmation():
+    client = KeeperHubClient("kh_test", request_fn=lambda **_: AssertionError("must not request"))
+    try:
+        client.broadcast_testnet_transfer(
+            chain_id=11155111,
+            recipient="0x0000000000000000000000000000000000000001",
+            amount="0.01",
+            confirm=False,
+        )
+    except ValueError as exc:
+        assert "explicit confirmation" in str(exc)
+    else:
+        raise AssertionError("broadcast must be fail-closed")
