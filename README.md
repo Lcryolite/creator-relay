@@ -10,7 +10,10 @@ identity.
 
 The default demo is deliberately offline and does **not** invoke a Mind, send
 email, or fabricate an agent response. Its cards are marked `local draft —
-needs Mind response`.
+needs Mind response`. Each brief is stored in a visible local SQLite timeline
+with a queued next-day follow-up, so the creator can inspect continuity rather
+than trust hidden state. This local timeline is preparation evidence, not proof
+of a Minds run.
 
 For a real contest integration, the owner must:
 

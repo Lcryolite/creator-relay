@@ -1,4 +1,5 @@
 from creator_relay.relay import CreatorBrief, MindRelay
+from creator_relay.memory import CreatorMemory
 from creator_relay.web import create_app
 
 
@@ -45,3 +46,27 @@ def test_web_api_is_explicitly_non_live():
     assert response.status_code == 200
     assert response.json["live_delivery"] is False
     assert response.json["mind_configured"] is False
+
+
+def test_memory_keeps_a_visible_brief_and_follow_up(tmp_path):
+    memory = CreatorMemory(tmp_path / "creator-relay.sqlite3")
+    remembered = memory.remember(BRIEF)
+    timeline = memory.timeline()
+    assert remembered["brief_id"] == 1
+    assert timeline[0]["goal"] == BRIEF.goal
+    assert timeline[0]["status"] == "queued"
+
+
+def test_timeline_api_shows_persistence_without_claiming_delivery(tmp_path):
+    app = create_app()
+    app.config["MEMORY_DATABASE"] = str(tmp_path / "not_used_after_creation.sqlite3")
+    client = app.test_client()
+    created = client.post(
+        "/api/brief",
+        json={"source": BRIEF.source, "audience": BRIEF.audience,
+              "channels": list(BRIEF.channels), "goal": BRIEF.goal},
+    )
+    history = client.get("/api/timeline")
+    assert created.status_code == 200
+    assert history.json["events"]
+    assert history.json["live_delivery"] is False

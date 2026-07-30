@@ -14,7 +14,7 @@
   <body>
     <main>
       <h1>Creator Relay</h1>
-      <p>Turn one creator brief into transparent cross-channel drafts. This loopback demo does not send email or claim a live Mind response.</p>
+      <p>Turn one creator brief into transparent cross-channel drafts. This loopback demo stores a visible local timeline, but does not send email or claim a live Mind response.</p>
       <form id="brief">
         <label>Source material<textarea name="source" required minlength="40"></textarea></label>
         <label>Audience<input name="audience" required placeholder="Independent video creators"></label>
@@ -27,12 +27,18 @@
         <button type="submit">Build local draft</button>
       </form>
       <pre id="result" aria-live="polite">No draft generated yet.</pre>
+      <button id="timeline" type="button">View persistent local timeline</button>
+      <pre id="history" aria-live="polite">No brief stored yet.</pre>
     </main>
     <script>
       document.querySelector('#brief').addEventListener('submit', async (event) => {
         event.preventDefault(); const form = new FormData(event.currentTarget);
         const response = await fetch('/api/brief', {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({source: form.get('source'), audience: form.get('audience'), goal: form.get('goal'), channels: form.getAll('channels')})});
         document.querySelector('#result').textContent = JSON.stringify(await response.json(), null, 2);
+      });
+      document.querySelector('#timeline').addEventListener('click', async () => {
+        const response = await fetch('/api/timeline');
+        document.querySelector('#history').textContent = JSON.stringify(await response.json(), null, 2);
       });
     </script>
   </body>
