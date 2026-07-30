@@ -29,6 +29,28 @@ task explicit without sending anything by itself.
 See [the live Mind demo checklist](docs/live-mind-demo.md) for the official
 email/Telegram integration facts and a truthful recording sequence.
 
+## Live email delivery (owner-only)
+
+The web UI never delivers email. A separate CLI command is intentionally
+fail-closed: it needs an explicit `--confirm-live-delivery`, a real Mind ID and
+Mind Email, and locally injected SMTP values. It does not read ambient Gmail
+browser state or place credentials in the repository.
+
+```bash
+CREATOR_RELAY_SMTP_HOST='smtp.example.com' \
+CREATOR_RELAY_SMTP_USERNAME='owner@example.com' \
+CREATOR_RELAY_SMTP_PASSWORD='local-app-password' \
+CREATOR_RELAY_SMTP_FROM='owner@example.com' \
+.venv/bin/creator-relay send-mind-brief \
+  --confirm-live-delivery --mind-id 'actual-mind-id' \
+  --mind-email 'actual-mind-email' --channels 'YouTube,X' \
+  --audience 'independent video creators' \
+  --goal 'invite discussion around the next episode' \
+  --source 'At least forty characters of creator-owned source material.'
+```
+
+This command is not run by this repository's tests or demo.
+
 ## Run locally
 
 ```bash

@@ -1,5 +1,6 @@
 from creator_relay.relay import CreatorBrief, MindRelay
 from creator_relay.memory import CreatorMemory
+from creator_relay.delivery import SmtpConfig
 from creator_relay.web import create_app
 
 
@@ -70,3 +71,17 @@ def test_timeline_api_shows_persistence_without_claiming_delivery(tmp_path):
     assert created.status_code == 200
     assert history.json["events"]
     assert history.json["live_delivery"] is False
+
+
+def test_smtp_config_fails_before_any_network_without_owner_values(monkeypatch):
+    for name in (
+        "CREATOR_RELAY_SMTP_HOST", "CREATOR_RELAY_SMTP_USERNAME",
+        "CREATOR_RELAY_SMTP_PASSWORD", "CREATOR_RELAY_SMTP_FROM",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    try:
+        SmtpConfig.from_environment()
+    except ValueError as exc:
+        assert "missing SMTP configuration" in str(exc)
+    else:
+        raise AssertionError("SMTP must require explicit configuration")
