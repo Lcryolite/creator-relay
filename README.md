@@ -26,6 +26,9 @@ For a real contest integration, the owner must:
 The code's `MindRelay.compose()` boundary makes the requested persistent Mind
 task explicit without sending anything by itself.
 
+See [the live Mind demo checklist](docs/live-mind-demo.md) for the official
+email/Telegram integration facts and a truthful recording sequence.
+
 ## Run locally
 
 ```bash
